@@ -70,6 +70,28 @@ def generate_prba(width_px, height_px, dpi, block_size_mm=0.5):
     final_array = (scaled_grid[:height_px, :width_px] * 255).astype(np.uint8)
     return Image.fromarray(final_array, mode='L')
 
+def generate_stripes(width_px, height_px, dpi, stripe_width_mm=1.5, orientation='horizontal'):
+    stripe_px = max(1, mm_to_px(stripe_width_mm, dpi))
+
+    if orientation == 'horizontal':
+        x = np.arange(height_px)[:, None]
+    else:
+        x = np.arange(width_px)[None, :]
+    pattern = ((x // stripe_px) % 2 * 255).astype(np.uint8)
+    pattern = np.broadcast_to(pattern, (height_px, width_px)).copy()
+    return Image.fromarray(pattern, mode='L')
+
+def generate_sin_grating(width_px, height_px, dpi, frequency_mm=5.0, orientation='horizontal', phase_deg=0.0):
+    freq_px = max(2, mm_to_px(frequency_mm, dpi))
+    phase_rad = np.deg2rad(phase_deg)
+    if orientation == 'horizontal':
+        x = np.arange(height_px)[:, None]
+    elif orientation == 'vertical':
+        x = np.arange(width_px)[None, :]
+    pattern = 0.5 * (1 + np.sin(2 * np.pi * x / freq_px + phase_rad))
+    pattern = np.broadcast_to(pattern, (height_px, width_px)).copy()
+    return Image.fromarray((pattern * 255).astype(np.uint8), mode='L')
+
 
 # ---------------------------------------------------------------------------
 # Save-options dialog
@@ -254,7 +276,9 @@ class PatternApp(tk.Tk):
         self._pattern_var = tk.StringVar(value="speckle")
         for label, val in [("Speckle", "speckle"),
                             ("Checkerboard", "checkerboard"),
-                            ("PRBA (Pseudo-Random Binary Array)", "prba")]:
+                            ("PRBA (Pseudo-Random Binary Array)", "prba"),
+                            ("Stripes", "stripes"),
+                            ("Sin Grating", "sine")]:
             ttk.Radiobutton(parent, text=label, value=val,
                             variable=self._pattern_var,
                             command=self._on_pattern_changed).grid(
@@ -279,6 +303,10 @@ class PatternApp(tk.Tk):
         self._max_dot_var    = tk.DoubleVar(value=0.25)
         self._sq_size_var    = tk.DoubleVar(value=1.0)
         self._block_size_var = tk.DoubleVar(value=0.5)
+        self._stripe_width_var = tk.DoubleVar(value=1.5)
+        self._sine_freq_var  = tk.DoubleVar(value=5.0)
+        self._sine_phase_var = tk.DoubleVar(value=0.0)
+        self._orient_var     = tk.StringVar(value="horizontal")
 
         self._on_pattern_changed()
 
@@ -330,6 +358,13 @@ class PatternApp(tk.Tk):
         ttk.Button(parent, text="Save Image…",
                    command=self._on_save).pack(side="left")
 
+    def _build_orient_selector(self, parent, row, var, choices):
+        ttk.Label(parent, text="Orientation:").grid(row=row, column=0, sticky="w")
+        cb = ttk.Combobox(parent, textvariable=var, values=choices,
+                          state="readonly", width=12)
+        cb.grid(row=row, column=1, columnspan=2, sticky="w", padx=(4, 0))
+        return row + 1
+    
     # ------------------------------------------------------------------
     # Event handlers
     # ------------------------------------------------------------------
@@ -363,6 +398,13 @@ class PatternApp(tk.Tk):
         elif pt == "prba":
             r = self._build_param_slider(f, r, "Block size (mm):",
                                          self._block_size_var, 0.05, 5.0, 0.05, "%.2f")
+        elif pt == "stripes":
+            r = self._build_param_slider(f, r, "Stripe width (mm):", self._stripe_width_var, 0.10, 10.0, 0.05)
+            r = self._build_orient_selector(f, r, self._orient_var, ["horizontal", "vertical"])
+        elif pt == "sine":
+            r = self._build_param_slider(f, r, "Frequency (mm):", self._sine_freq_var, 0.10, 20.0, 0.05, "%.2f")
+            r = self._build_param_slider(f, r, "Phase (°):", self._sine_phase_var, 0.0, 360.0, 1.0, "%.0f°")
+            r = self._build_orient_selector(f, r, self._orient_var, ["horizontal", "vertical"])         
 
     def _on_canvas_resize(self, event):
         """Re-fit the cached preview into the new canvas size."""
@@ -388,6 +430,15 @@ class PatternApp(tk.Tk):
             return generate_prba(
                 w_px, h_px, dpi,
                 block_size_mm=self._block_size_var.get())
+        elif pt == "stripes":
+            return generate_stripes(w_px, h_px, dpi,
+                stripe_width_mm=self._stripe_width_var.get(),
+                orientation=self._orient_var.get())
+        elif pt == "sine":
+            return generate_sin_grating(w_px, h_px, dpi,
+                frequency_mm=self._sine_freq_var.get(),
+                phase_deg=self._sine_phase_var.get(),
+                orientation=self._orient_var.get())
 
     def _render_preview(self, cw, ch):
         """Scale _preview_source to fill (cw × ch), centred, aspect-preserved."""
