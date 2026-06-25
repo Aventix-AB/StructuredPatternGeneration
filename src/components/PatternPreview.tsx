@@ -233,53 +233,51 @@ export function PatternPreview({
       <CardContent className="flex flex-1 flex-col gap-4 min-h-0">
         {/* Ruler + pattern canvas grid — grows to fill card, rulers+canvas fit inside */}
         <div ref={containerRef} className="flex-1 min-h-0 w-full">
-          {containerSize.w > 0 && containerSize.h > 0 && (
+          <div
+            className="grid"
+            style={{
+              gridTemplateColumns: `${RULER_SIZE}px ${canvasW}px`,
+              gridTemplateRows: `${RULER_SIZE}px ${canvasH}px`,
+            }}
+          >
+            {/* Corner */}
             <div
-              className="grid"
+              className="rounded-tl-sm"
               style={{
-                gridTemplateColumns: `${RULER_SIZE}px ${canvasW}px`,
-                gridTemplateRows: `${RULER_SIZE}px ${canvasH}px`,
+                background: RULER_BG,
+                borderRight: `1px solid ${BORDER}`,
+                borderBottom: `1px solid ${BORDER}`,
               }}
+            />
+
+            {/* Horizontal ruler */}
+            <canvas
+              ref={hRulerRef}
+              style={{ display: "block", width: canvasW, height: RULER_SIZE }}
+            />
+
+            {/* Vertical ruler */}
+            <canvas
+              ref={vRulerRef}
+              style={{ display: "block", width: RULER_SIZE, height: canvasH }}
+            />
+
+            {/* Pattern canvas */}
+            <div
+              className="overflow-hidden border border-border bg-white"
+              style={{ width: canvasW, height: canvasH }}
             >
-              {/* Corner */}
-              <div
-                className="rounded-tl-sm"
+              <canvas
+                ref={canvasRef}
                 style={{
-                  background: RULER_BG,
-                  borderRight: `1px solid ${BORDER}`,
-                  borderBottom: `1px solid ${BORDER}`,
+                  display: "block",
+                  width: "100%",
+                  height: "100%",
+                  imageRendering: "pixelated",
                 }}
               />
-
-              {/* Horizontal ruler */}
-              <canvas
-                ref={hRulerRef}
-                style={{ display: "block", width: canvasW, height: RULER_SIZE }}
-              />
-
-              {/* Vertical ruler */}
-              <canvas
-                ref={vRulerRef}
-                style={{ display: "block", width: RULER_SIZE, height: canvasH }}
-              />
-
-              {/* Pattern canvas */}
-              <div
-                className="overflow-hidden border border-border bg-white"
-                style={{ width: canvasW, height: canvasH }}
-              >
-                <canvas
-                  ref={canvasRef}
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    height: "100%",
-                    imageRendering: "pixelated",
-                  }}
-                />
-              </div>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Actions */}

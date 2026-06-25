@@ -8,10 +8,10 @@ import {
 } from "@/components/ui/select";
 import { getPatternById, PATTERN_REGISTRY } from "@/lib/patterns";
 import {
-  CUSTOM_PRESET_ID,
+  CUSTOM_FORMAT_ID,
   dpiToPxPerMm,
   fromDisplaySize,
-  PAPER_PRESETS,
+  PAPER_FORMATS,
   pxPerMmToDpi,
   toDisplaySize,
   type ResolutionUnit,
@@ -20,7 +20,7 @@ import {
 
 export interface PatternControlsProps {
   // Canvas config
-  presetId: string;
+  formatId: string;
   sizeUnit: SizeUnit;
   resolutionUnit: ResolutionUnit;
   widthMm: number;
@@ -31,7 +31,7 @@ export interface PatternControlsProps {
   patternId: string;
   settingsMap: Record<string, Record<string, number | string>>;
   // Handlers
-  onPresetChange: (id: string) => void;
+  onFormatChange: (id: string) => void;
   onSizeUnitChange: (unit: SizeUnit) => void;
   onResolutionUnitChange: (unit: ResolutionUnit) => void;
   onSizeChange: (displayValue: number, axis: "width" | "height") => void;
@@ -68,7 +68,7 @@ const inputClass =
   "h-9 w-full rounded-md border border-input bg-background px-3 text-sm disabled:cursor-not-allowed disabled:opacity-50";
 
 export function PatternControls({
-  presetId,
+  formatId,
   sizeUnit,
   resolutionUnit,
   widthMm,
@@ -77,7 +77,7 @@ export function PatternControls({
   seed,
   patternId,
   settingsMap,
-  onPresetChange,
+  onFormatChange,
   onSizeUnitChange,
   onResolutionUnitChange,
   onSizeChange,
@@ -90,7 +90,7 @@ export function PatternControls({
   const heightDisplay = toDisplaySize(heightMm, sizeUnit);
   const resolutionDisplay = resolutionUnit === "dpi" ? dpi : dpiToPxPerMm(dpi);
 
-  const isCustom = presetId === CUSTOM_PRESET_ID;
+  const isCustom = formatId === CUSTOM_FORMAT_ID;
   const activePattern = getPatternById(patternId);
   const activeSettings = settingsMap[patternId] ?? {};
 
@@ -116,18 +116,18 @@ export function PatternControls({
           <CardTitle className="text-base">Canvas Settings</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Field label="Preset">
-            <Select value={presetId} onValueChange={onPresetChange}>
+          <Field label="Format">
+            <Select value={formatId} onValueChange={onFormatChange}>
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {PAPER_PRESETS.map((preset) => (
-                  <SelectItem key={preset.id} value={preset.id}>
-                    {preset.label}
+                {PAPER_FORMATS.map((format) => (
+                  <SelectItem key={format.id} value={format.id}>
+                    {format.label}
                   </SelectItem>
                 ))}
-                <SelectItem value={CUSTOM_PRESET_ID}>Custom</SelectItem>
+                <SelectItem value={CUSTOM_FORMAT_ID}>Custom</SelectItem>
               </SelectContent>
             </Select>
           </Field>

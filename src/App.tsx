@@ -15,9 +15,10 @@ import {
   grayscaleToImageData,
 } from "@/lib/patterns/render";
 import {
-  CUSTOM_PRESET_ID,
-  findPresetById,
+  CUSTOM_FORMAT_ID,
+  findFormatById,
   mmToPx,
+  PAPER_FORMAT_ID,
   type ResolutionUnit,
   type SizeUnit,
 } from "@/lib/units";
@@ -29,7 +30,7 @@ const MAX_PREVIEW_PIXELS = 1_600_000;
 function App() {
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const [presetId, setPresetId] = useState<string>("a4-portrait");
+  const [formatId, setFormatId] = useState<string>(PAPER_FORMAT_ID.A4_PORTRAIT);
   const [sizeUnit, setSizeUnit] = useState<SizeUnit>("mm");
   const [resolutionUnit, setResolutionUnit] = useState<ResolutionUnit>("dpi");
   const [widthMm, setWidthMm] = useState<number>(210);
@@ -104,20 +105,20 @@ function App() {
   // Handlers
   // -------------------------------------------------------------------------
 
-  function handlePresetChange(id: string): void {
-    setPresetId(id);
-    if (id === CUSTOM_PRESET_ID) return;
-    const preset = findPresetById(id);
-    if (!preset) return;
-    setWidthMm(preset.widthMm);
-    setHeightMm(preset.heightMm);
+  function handleFormatChange(id: string): void {
+    setFormatId(id);
+    if (id === CUSTOM_FORMAT_ID) return;
+    const format = findFormatById(id);
+    if (!format) return;
+    setWidthMm(format.widthMm);
+    setHeightMm(format.heightMm);
   }
 
   function handleSizeChange(mmValue: number, axis: "width" | "height"): void {
     if (axis === "width") setWidthMm(mmValue);
     else setHeightMm(mmValue);
-    // Any manual size edit switches to custom preset
-    setPresetId(CUSTOM_PRESET_ID);
+    // Any manual size edit switches to custom format
+    setFormatId(CUSTOM_FORMAT_ID);
   }
 
   function handleResolutionChange(newDpi: number): void {
@@ -183,7 +184,7 @@ function App() {
         {/* Left – controls (fixed width, scrollable) */}
         <aside className="w-80 flex-none overflow-y-auto border-r p-4">
           <PatternControls
-            presetId={presetId}
+            formatId={formatId}
             sizeUnit={sizeUnit}
             resolutionUnit={resolutionUnit}
             widthMm={widthMm}
@@ -192,7 +193,7 @@ function App() {
             seed={seed}
             patternId={patternId}
             settingsMap={settingsMap}
-            onPresetChange={handlePresetChange}
+            onFormatChange={handleFormatChange}
             onSizeUnitChange={setSizeUnit}
             onResolutionUnitChange={setResolutionUnit}
             onSizeChange={handleSizeChange}
