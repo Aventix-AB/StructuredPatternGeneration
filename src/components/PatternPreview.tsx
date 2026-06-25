@@ -12,7 +12,6 @@ import {
 import { mmToInches } from "@/lib/units";
 
 const RULER_SIZE = 22; // px — ruler strip thickness
-const MAX_CANVAS_H = 620; // px — max display height of pattern area
 
 // ---------------------------------------------------------------------------
 // Ruler tick spacing
@@ -171,29 +170,32 @@ export function PatternPreview({
   const hRulerRef = useRef<HTMLCanvasElement>(null);
   const vRulerRef = useRef<HTMLCanvasElement>(null);
 
-  // Measured available width of the container (excluding ruler strip)
-  const [containerW, setContainerW] = useState(0);
+  // Measure both width and height of the flex-1 container
+  const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const obs = new ResizeObserver(([entry]) => {
-      setContainerW(Math.floor(entry.contentRect.width));
+      setContainerSize({
+        w: Math.floor(entry.contentRect.width),
+        h: Math.floor(entry.contentRect.height),
+      });
     });
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
 
-  // Compute exact canvas CSS pixel dimensions respecting aspect ratio + max height
+  // Fit canvas inside the measured container while preserving paper aspect ratio
   const aspectRatio = widthMm / heightMm;
-  const availW = Math.max(1, containerW - RULER_SIZE);
-  const rawH = availW / aspectRatio;
-  const clampedH = Math.min(rawH, MAX_CANVAS_H);
-  const canvasH = Math.max(1, Math.round(clampedH));
-  const canvasW = Math.max(
-    1,
-    Math.round(clampedH < rawH ? clampedH * aspectRatio : availW),
-  );
+  const availW = Math.max(1, containerSize.w - RULER_SIZE);
+  const availH = Math.max(1, containerSize.h - RULER_SIZE);
+  // Try width-constrained first; fall back to height-constrained
+  const byWidthH = availW / aspectRatio;
+  const [canvasW, canvasH] =
+    byWidthH <= availH
+      ? [Math.round(availW), Math.round(byWidthH)]
+      : [Math.round(availH * aspectRatio), Math.round(availH)];
 
   // (Re-)draw rulers whenever dimensions or physical size changes
   useEffect(() => {
@@ -209,7 +211,7 @@ export function PatternPreview({
   }, [canvasH, heightMm]);
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex h-full flex-col">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">Preview</CardTitle>
         <CardDescription>
@@ -217,10 +219,10 @@ export function PatternPreview({
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="flex flex-col gap-4">
-        {/* Ruler + pattern canvas grid */}
-        <div ref={containerRef} className="w-full">
-          {containerW > 0 && (
+      <CardContent className="flex flex-1 flex-col gap-4 min-h-0">
+        {/* Ruler + pattern canvas grid — grows to fill card, rulers+canvas fit inside */}
+        <div ref={containerRef} className="flex-1 min-h-0 w-full">
+          {containerSize.w > 0 && containerSize.h > 0 && (
             <div
               className="grid"
               style={{

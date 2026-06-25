@@ -203,8 +203,8 @@ function App() {
           />
         </aside>
 
-        {/* Right – preview (fills remaining space, scrollable) */}
-        <main className="min-w-0 flex-1 overflow-y-auto p-4">
+        {/* Right – preview (fills remaining space, no scroll) */}
+        <main className="min-w-0 flex-1 overflow-hidden flex flex-col p-4">
           <PatternPreview
             canvasRef={previewCanvasRef}
             widthMm={widthMm}
