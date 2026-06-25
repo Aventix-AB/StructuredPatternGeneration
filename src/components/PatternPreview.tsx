@@ -214,9 +214,20 @@ export function PatternPreview({
     <Card className="flex h-full flex-col">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">Preview</CardTitle>
-        <CardDescription>
-          {patternLabel} · Updates automatically · Preview may be downscaled
-        </CardDescription>
+        <CardDescription>{patternLabel}</CardDescription>
+        <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground pt-1">
+          <span>
+            {widthMm.toFixed(1)} × {heightMm.toFixed(1)} mm
+          </span>
+          <span>
+            {mmToInches(widthMm).toFixed(2)} × {mmToInches(heightMm).toFixed(2)}
+             in
+          </span>
+          <span>{dpi.toFixed(0)} DPI</span>
+          <span>
+            {fullWidthPx} × {fullHeightPx} px
+          </span>
+        </div>
       </CardHeader>
 
       <CardContent className="flex flex-1 flex-col gap-4 min-h-0">
@@ -269,21 +280,6 @@ export function PatternPreview({
               </div>
             </div>
           )}
-        </div>
-
-        {/* Metadata */}
-        <div className="grid gap-y-0.5 gap-x-4 text-xs text-muted-foreground sm:grid-cols-2 xl:grid-cols-4">
-          <span>
-            {widthMm.toFixed(1)} × {heightMm.toFixed(1)} mm
-          </span>
-          <span>
-            {mmToInches(widthMm).toFixed(2)} × {mmToInches(heightMm).toFixed(2)}{" "}
-            in
-          </span>
-          <span>{dpi.toFixed(0)} DPI</span>
-          <span>
-            {fullWidthPx} × {fullHeightPx} px
-          </span>
         </div>
 
         {/* Actions */}
