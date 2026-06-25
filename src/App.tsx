@@ -138,7 +138,11 @@ function App() {
       { widthPx: fullWidthPx, heightPx: fullHeightPx, dpi, seed },
       settingsMap,
     );
-    const imageData = grayscaleToImageData(fullWidthPx, fullHeightPx, grayscale);
+    const imageData = grayscaleToImageData(
+      fullWidthPx,
+      fullHeightPx,
+      grayscale,
+    );
     return createCanvasFromImageData(imageData);
   }
 

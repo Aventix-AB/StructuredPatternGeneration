@@ -69,7 +69,8 @@ function drawHRuler(
       ctx.fillStyle = TICK_MAJOR;
       ctx.font = `9px system-ui, sans-serif`;
       ctx.textBaseline = "top";
-      ctx.textAlign = mm === 0 ? "left" : mm >= lengthMm - major * 0.4 ? "right" : "center";
+      ctx.textAlign =
+        mm === 0 ? "left" : mm >= lengthMm - major * 0.4 ? "right" : "center";
       ctx.fillText(String(mm), x, 1);
     }
   }
@@ -189,7 +190,10 @@ export function PatternPreview({
   const rawH = availW / aspectRatio;
   const clampedH = Math.min(rawH, MAX_CANVAS_H);
   const canvasH = Math.max(1, Math.round(clampedH));
-  const canvasW = Math.max(1, Math.round(clampedH < rawH ? clampedH * aspectRatio : availW));
+  const canvasW = Math.max(
+    1,
+    Math.round(clampedH < rawH ? clampedH * aspectRatio : availW),
+  );
 
   // (Re-)draw rulers whenever dimensions or physical size changes
   useEffect(() => {
@@ -227,7 +231,11 @@ export function PatternPreview({
               {/* Corner */}
               <div
                 className="rounded-tl-sm"
-                style={{ background: RULER_BG, borderRight: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}
+                style={{
+                  background: RULER_BG,
+                  borderRight: `1px solid ${BORDER}`,
+                  borderBottom: `1px solid ${BORDER}`,
+                }}
               />
 
               {/* Horizontal ruler */}
@@ -267,7 +275,8 @@ export function PatternPreview({
             {widthMm.toFixed(1)} × {heightMm.toFixed(1)} mm
           </span>
           <span>
-            {mmToInches(widthMm).toFixed(2)} × {mmToInches(heightMm).toFixed(2)} in
+            {mmToInches(widthMm).toFixed(2)} × {mmToInches(heightMm).toFixed(2)}{" "}
+            in
           </span>
           <span>{dpi.toFixed(0)} DPI</span>
           <span>

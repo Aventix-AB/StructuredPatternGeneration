@@ -88,8 +88,7 @@ export function PatternControls({
 }: PatternControlsProps) {
   const widthDisplay = toDisplaySize(widthMm, sizeUnit);
   const heightDisplay = toDisplaySize(heightMm, sizeUnit);
-  const resolutionDisplay =
-    resolutionUnit === "dpi" ? dpi : dpiToPxPerMm(dpi);
+  const resolutionDisplay = resolutionUnit === "dpi" ? dpi : dpiToPxPerMm(dpi);
 
   const isCustom = presetId === CUSTOM_PRESET_ID;
   const activePattern = getPatternById(patternId);
@@ -192,13 +191,21 @@ export function PatternControls({
             </Field>
           </div>
 
-          <Field label={resolutionUnit === "dpi" ? "Resolution (DPI)" : "Resolution (px/mm)"}>
+          <Field
+            label={
+              resolutionUnit === "dpi"
+                ? "Resolution (DPI)"
+                : "Resolution (px/mm)"
+            }
+          >
             <input
               className={inputClass}
               type="number"
               min={1}
               step={resolutionUnit === "dpi" ? 1 : 0.01}
-              value={resolutionDisplay.toFixed(resolutionUnit === "dpi" ? 0 : 3)}
+              value={resolutionDisplay.toFixed(
+                resolutionUnit === "dpi" ? 0 : 3,
+              )}
               onChange={handleResolutionChange}
             />
           </Field>
@@ -256,7 +263,8 @@ export function PatternControls({
                         <span className="font-mono text-xs text-muted-foreground tabular-nums">
                           {value.toFixed(
                             control.step < 1
-                              ? String(control.step).split(".")[1]?.length ?? 2
+                              ? (String(control.step).split(".")[1]?.length ??
+                                  2)
                               : 0,
                           )}
                         </span>
