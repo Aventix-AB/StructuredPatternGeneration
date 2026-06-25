@@ -122,8 +122,8 @@ function drawVRuler(
       ctx.fillStyle = TICK_MAJOR;
       ctx.font = "8px system-ui, sans-serif";
       ctx.textAlign = "center";
-      ctx.textBaseline = "bottom";
-      ctx.fillText(String(mm), 0, -1);
+      ctx.textBaseline = "top";
+      ctx.fillText(String(mm), 0, 3);
       ctx.restore();
     }
   }
