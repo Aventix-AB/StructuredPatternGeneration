@@ -254,48 +254,61 @@ export function PatternControls({
                 const rawValue = activeSettings[control.id];
 
                 if (control.type === "number") {
-                  const value =
+                  // Values with unit:"mm" are stored in mm internally; convert to display unit
+                  const isMm = control.unit === "mm";
+                  const storedValue =
                     typeof rawValue === "number" ? rawValue : control.min;
+                  const dispValue = isMm
+                    ? toDisplaySize(storedValue, sizeUnit)
+                    : storedValue;
+                  const dispMin = isMm
+                    ? toDisplaySize(control.min, sizeUnit)
+                    : control.min;
+                  const dispMax = isMm
+                    ? toDisplaySize(control.max, sizeUnit)
+                    : control.max;
+                  const dispStep = isMm
+                    ? toDisplaySize(control.step, sizeUnit)
+                    : control.step;
+                  const label = isMm
+                    ? `${control.label} (${sizeUnit})`
+                    : control.label;
+                  // Decimal places driven by step; cap at 4 to avoid scientific notation noise
+                  const decimals =
+                    dispStep < 1
+                      ? Math.min(4, String(dispStep).split(".")[1]?.length ?? 2)
+                      : 0;
+
+                  function commitChange(raw: number) {
+                    const mmValue = isMm ? fromDisplaySize(raw, sizeUnit) : raw;
+                    onPatternSettingChange(control.id, mmValue);
+                  }
+
                   return (
                     <div key={control.id} className="grid gap-1.5">
                       <div className="flex items-center justify-between">
-                        <FieldLabel>{control.label}</FieldLabel>
+                        <FieldLabel>{label}</FieldLabel>
                         <span className="font-mono text-xs text-muted-foreground tabular-nums">
-                          {value.toFixed(
-                            control.step < 1
-                              ? (String(control.step).split(".")[1]?.length ??
-                                  2)
-                              : 0,
-                          )}
+                          {dispValue.toFixed(decimals)}
                         </span>
                       </div>
                       <input
                         type="range"
                         className="w-full accent-primary"
-                        min={control.min}
-                        max={control.max}
-                        step={control.step}
-                        value={value}
-                        onChange={(e) =>
-                          onPatternSettingChange(
-                            control.id,
-                            Number(e.target.value),
-                          )
-                        }
+                        min={dispMin}
+                        max={dispMax}
+                        step={dispStep}
+                        value={dispValue}
+                        onChange={(e) => commitChange(Number(e.target.value))}
                       />
                       <input
                         className={inputClass}
                         type="number"
-                        min={control.min}
-                        max={control.max}
-                        step={control.step}
-                        value={value}
-                        onChange={(e) =>
-                          onPatternSettingChange(
-                            control.id,
-                            Number(e.target.value),
-                          )
-                        }
+                        min={dispMin}
+                        max={dispMax}
+                        step={dispStep}
+                        value={dispValue.toFixed(decimals)}
+                        onChange={(e) => commitChange(Number(e.target.value))}
                       />
                     </div>
                   );

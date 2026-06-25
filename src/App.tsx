@@ -213,6 +213,8 @@ function App() {
             dpi={dpi}
             fullWidthPx={fullWidthPx}
             fullHeightPx={fullHeightPx}
+            sizeUnit={sizeUnit}
+            resolutionUnit={resolutionUnit}
             status={status}
             patternLabel={activePattern?.label ?? ""}
             onSaveJpg={handleSaveJpg}

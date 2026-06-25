@@ -7,6 +7,8 @@ export interface PatternControlNumber {
     min: number
     max: number
     step: number
+    /** When "mm", values are stored in mm internally and converted to the active sizeUnit for display. */
+    unit?: "mm"
 }
 
 export interface PatternControlSelect {

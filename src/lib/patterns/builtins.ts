@@ -75,7 +75,8 @@ const specklePattern: PatternDefinition<SpeckleSettings> = {
         {
             type: "number",
             id: "minDotMm",
-            label: "Min Dot (mm)",
+            label: "Min Dot",
+            unit: "mm",
             min: 0.02,
             max: 0.3,
             step: 0.01,
@@ -83,7 +84,8 @@ const specklePattern: PatternDefinition<SpeckleSettings> = {
         {
             type: "number",
             id: "maxDotMm",
-            label: "Max Dot (mm)",
+            label: "Max Dot",
+            unit: "mm",
             min: 0.05,
             max: 0.6,
             step: 0.01,
@@ -123,7 +125,8 @@ const checkerboardPattern: PatternDefinition<CheckerboardSettings> = {
         {
             type: "number",
             id: "squareSizeMm",
-            label: "Square Size (mm)",
+            label: "Square Size",
+            unit: "mm",
             min: 0.1,
             max: 10,
             step: 0.05,
@@ -157,7 +160,8 @@ const prbaPattern: PatternDefinition<PrbaSettings> = {
         {
             type: "number",
             id: "blockSizeMm",
-            label: "Block Size (mm)",
+            label: "Block Size",
+            unit: "mm",
             min: 0.05,
             max: 5,
             step: 0.05,
@@ -201,7 +205,8 @@ const stripePattern: PatternDefinition<StripeSettings> = {
         {
             type: "number",
             id: "stripeWidthMm",
-            label: "Stripe Width (mm)",
+            label: "Stripe Width",
+            unit: "mm",
             min: 0.1,
             max: 10,
             step: 0.05,
@@ -246,7 +251,8 @@ const sinePattern: PatternDefinition<SineSettings> = {
         {
             type: "number",
             id: "frequencyMm",
-            label: "Frequency (mm)",
+            label: "Frequency",
+            unit: "mm",
             min: 0.1,
             max: 20,
             step: 0.05,

@@ -9,8 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { mmToInches } from "@/lib/units";
-
+import { dpiToPxPerMm, toDisplaySize } from "@/lib/units";
+import type { ResolutionUnit, SizeUnit } from "@/lib/units";
 const RULER_SIZE = 22; // px — ruler strip thickness
 
 // ---------------------------------------------------------------------------
@@ -148,6 +148,8 @@ export interface PatternPreviewProps {
   dpi: number;
   fullWidthPx: number;
   fullHeightPx: number;
+  sizeUnit: SizeUnit;
+  resolutionUnit: ResolutionUnit;
   status: string;
   patternLabel: string;
   onSaveJpg: () => Promise<void>;
@@ -161,6 +163,8 @@ export function PatternPreview({
   dpi,
   fullWidthPx,
   fullHeightPx,
+  sizeUnit,
+  resolutionUnit,
   status,
   patternLabel,
   onSaveJpg,
@@ -217,13 +221,20 @@ export function PatternPreview({
         <CardDescription>{patternLabel}</CardDescription>
         <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground pt-1">
           <span>
-            {widthMm.toFixed(1)} × {heightMm.toFixed(1)} mm
+            {toDisplaySize(widthMm, sizeUnit).toFixed(
+              sizeUnit === "mm" ? 1 : 3,
+            )}
+            {" × "}
+            {toDisplaySize(heightMm, sizeUnit).toFixed(
+              sizeUnit === "mm" ? 1 : 3,
+            )}{" "}
+            {sizeUnit}
           </span>
           <span>
-            {mmToInches(widthMm).toFixed(2)} × {mmToInches(heightMm).toFixed(2)}
-             in
+            {resolutionUnit === "dpi"
+              ? `${Math.round(dpi)} DPI`
+              : `${dpiToPxPerMm(dpi).toFixed(3)} px/mm`}
           </span>
-          <span>{dpi.toFixed(0)} DPI</span>
           <span>
             {fullWidthPx} × {fullHeightPx} px
           </span>
