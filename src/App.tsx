@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { PatternControls } from "@/components/PatternControls";
 import { PatternPreview } from "@/components/PatternPreview";
+import { AppFooter } from "@/components/layout/AppFooter";
+import { AppHeader } from "@/components/layout/AppHeader";
 import { downloadCanvasAsJpeg, printCanvas } from "@/lib/export";
 import {
   createDefaultSettingsMap,
@@ -175,11 +177,7 @@ function App() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <header className="flex-none border-b px-6 py-3">
-        <h1 className="font-heading text-xl font-semibold">
-          Structured Pattern Generator
-        </h1>
-      </header>
+      <AppHeader />
 
       <div className="flex min-h-0 flex-1 overflow-hidden">
         {/* Left – controls (fixed width, scrollable) */}
@@ -221,6 +219,8 @@ function App() {
           />
         </main>
       </div>
+
+      <AppFooter />
     </div>
   );
 }
