@@ -21,6 +21,19 @@ SIZE_PRESETS = {
 
 PREVIEW_DPI = 96   # nominal DPI used when generating the preview tile
 
+COLOR = {"Gray":None, "Red":(255,0,0), "Green":(0,255,0), "Blue":(0,0,255)}
+
+def apply_color(img, color):
+    if color is None:
+        return img
+    arr = np.array(img, dtype = np.float32)
+    alpha = (255 - arr) / 255 # 1 is pattern; 0 is bg
+    r0, g0, b0 = color
+    R = np.clip(255 -alpha * (255 - r0), 0, 255).astype(np.uint8)
+    G = np.clip(255 -alpha * (255 - g0), 0, 255).astype(np.uint8)
+    B = np.clip(255 -alpha * (255 - b0), 0, 255).astype(np.uint8)
+    return Image.fromarray(np.stack([R, G, B], axis=-1), mode='RGB')
+
 # ---------------------------------------------------------------------------
 # Pattern generators (unchanged logic, same as original script)
 # ---------------------------------------------------------------------------
@@ -289,6 +302,16 @@ class PatternApp(tk.Tk):
             row=row, column=0, columnspan=2, sticky="ew", pady=6)
         row += 1
 
+        ttk.Label(parent, text="Color", font=("", 9, "bold")).grid(row=row, column=0, columnspan=2, sticky="w", pady=(0, 2)); 
+        row += 1
+        self._color_var = tk.StringVar(value="Gray")
+        color_cb = ttk.Combobox(parent, textvariable=self._color_var, values=list(COLOR.keys()), state="readonly", width=22)
+        color_cb.grid(row=row, column=0, columnspan=2, sticky="w"); 
+        row += 1
+
+        ttk.Separator(parent, orient="horizontal").grid(row=row, column=0, columnspan=2, sticky="ew", pady=6);
+        row += 1
+
         ttk.Label(parent, text="Pattern Parameters", font=("", 9, "bold")).grid(
             row=row, column=0, columnspan=2, sticky="w", pady=(0, 2))
         row += 1
@@ -406,6 +429,11 @@ class PatternApp(tk.Tk):
             r = self._build_param_slider(f, r, "Phase (°):", self._sine_phase_var, 0.0, 360.0, 1.0, "%.0f°")
             r = self._build_orient_selector(f, r, self._orient_var, ["horizontal", "vertical"])         
 
+    def _make_image(self, w_px, h_px, dpi):
+        img_gray = self._make_image_gray(w_px, h_px, dpi)
+        color_rgb = COLOR.get(self._color_var.get())
+        return apply_color(img_gray, color_rgb)
+
     def _on_canvas_resize(self, event):
         """Re-fit the cached preview into the new canvas size."""
         if self._preview_source is None:
@@ -414,7 +442,7 @@ class PatternApp(tk.Tk):
             return
         self._render_preview(event.width, event.height)
 
-    def _make_image(self, w_px, h_px, dpi):
+    def _make_image_gray(self, w_px, h_px, dpi):
         pt = self._pattern_var.get()
         if pt == "speckle":
             return generate_speckle(
@@ -446,10 +474,16 @@ class PatternApp(tk.Tk):
         thumb = src.copy()
         thumb.thumbnail((cw, ch), Image.LANCZOS)
 
-        canvas_img = Image.new('L', (cw, ch), color=204)
+        mode = src.mode
+        bg_val =(204, 204, 204) if mode == 'RGB' else 204
+
+        canvas_img = Image.new(mode, (cw, ch), color=bg_val)
         x_off = (cw - thumb.width)  // 2
         y_off = (ch - thumb.height) // 2
         canvas_img.paste(thumb, (x_off, y_off))
+
+        if mode == 'L':
+            canvas_img = canvas_img.convert('RGB')
 
         self._tk_img = ImageTk.PhotoImage(canvas_img)
         self._canvas.delete("all")
@@ -472,8 +506,10 @@ class PatternApp(tk.Tk):
         self.config(cursor="")
 
         self._render_preview(cw, ch)
+        color_label = self._color_var.get()
+
         self._info_var.set(
-            f"Preview: {cw} × {ch} px  |  "
+            f"Preview: {cw} × {ch} px  |  Colour: {color_label}  |  "
             "Use \"Save Image…\" to export at full print resolution.")
 
     def _on_save(self):
