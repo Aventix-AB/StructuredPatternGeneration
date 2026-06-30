@@ -41,6 +41,8 @@ def apply_color(img, color):
 def mm_to_px(mm, dpi):
     return int((mm / 25.4) * dpi)
 
+def mm_to_px_f(mm, dpi):
+    return (mm / 25.4) * dpi # add for ring spacing/line width with fine parameters
 
 def generate_speckle(width_px, height_px, dpi,
                      density=0.35, min_dot_mm=0.05, max_dot_mm=0.25):
@@ -105,6 +107,26 @@ def generate_sin_grating(width_px, height_px, dpi, frequency_mm=5.0, orientation
     pattern = np.broadcast_to(pattern, (height_px, width_px)).copy()
     return Image.fromarray((pattern * 255).astype(np.uint8), mode='L')
 
+def generate_stripe_sin(width_px, height_px, dpi, gap_mm=7.5, stripe_width_mm=1.5, sin_frequency_mm=1.0, sin_phase_deg=0.0, stripe_value=0, orientation='horizontal'):
+    
+    gap_px = max(2.0, mm_to_px_f(gap_mm, dpi))
+    stripe_px = max(1.0, mm_to_px_f(stripe_width_mm, dpi))
+    period_px = gap_px + stripe_px
+    sin_freq_px = max(2.0, mm_to_px_f(sin_frequency_mm, dpi))
+    phase_rad = np.deg2rad(sin_phase_deg)
+    
+    coords = np.arange(height_px if orientation == 'horizontal' else width_px, dtype=float)
+    pos = coords % period_px
+    in_stripe = pos < stripe_px
+    local = pos - stripe_px  # 0 for each 'sin grating' within the stripe gap region
+    sin_vals = 0.5 * (1.0 + np.sin(2.0 * np.pi * local / sin_freq_px + phase_rad))
+    out_1d = np.where(in_stripe, float(stripe_value), sin_vals * 255.0)
+
+    if orientation == 'horizontal':
+        pat = np.broadcast_to(out_1d[:, np.newaxis], (height_px, width_px)).copy()
+    else:
+        pat = np.broadcast_to(out_1d[np.newaxis, :], (height_px, width_px)).copy()
+    return Image.fromarray(pat.astype(np.uint8), mode='L')
 
 # ---------------------------------------------------------------------------
 # Save-options dialog
@@ -291,7 +313,8 @@ class PatternApp(tk.Tk):
                             ("Checkerboard", "checkerboard"),
                             ("PRBA (Pseudo-Random Binary Array)", "prba"),
                             ("Stripes", "stripes"),
-                            ("Sin Grating", "sine")]:
+                            ("Sin Grating", "sine"),
+                            ("Stripe Plus Sin Grating", "stripe_sin")]:
             ttk.Radiobutton(parent, text=label, value=val,
                             variable=self._pattern_var,
                             command=self._on_pattern_changed).grid(
@@ -330,6 +353,14 @@ class PatternApp(tk.Tk):
         self._sine_freq_var  = tk.DoubleVar(value=5.0)
         self._sine_phase_var = tk.DoubleVar(value=0.0)
         self._orient_var     = tk.StringVar(value="horizontal")
+
+        self._ss_gap_var        = tk.DoubleVar(value=7.5)
+        self._ss_stripe_var     = tk.DoubleVar(value=1.5)
+        self._ss_sin_freq_var   = tk.DoubleVar(value=1.0)
+        self._ss_sin_phase_var  = tk.DoubleVar(value=0.0)
+        self._ss_stripe_val_var = tk.IntVar(value=0)     # 0 is Colored, 255 is Blank
+        self._ss_orient_var     = tk.StringVar(value="horizontal")
+        
 
         self._on_pattern_changed()
 
@@ -428,6 +459,20 @@ class PatternApp(tk.Tk):
             r = self._build_param_slider(f, r, "Frequency (mm):", self._sine_freq_var, 0.10, 20.0, 0.05, "%.2f")
             r = self._build_param_slider(f, r, "Phase (°):", self._sine_phase_var, 0.0, 360.0, 1.0, "%.0f°")
             r = self._build_orient_selector(f, r, self._orient_var, ["horizontal", "vertical"])         
+        elif pt == "stripe_sin":
+            r = self._build_param_slider(f, r, "Gap (mm):", self._ss_gap_var, 0.2, 30.0, 0.1, "%.1f")
+            r = self._build_param_slider(f, r, "Stripe width (mm):", self._ss_stripe_var, 0.1, 20.0, 0.1, "%.1f")
+
+            ttk.Label(f, text="Color for stripe:").grid(row=r, column=0, sticky="w")
+            cf = ttk.Frame(f); cf.grid(row=r, column=1, columnspan=2, sticky="w", padx=(4, 0))
+            ttk.Radiobutton(cf, text="Colored", value=0,   variable=self._ss_stripe_val_var).pack(side="left")
+            ttk.Radiobutton(cf, text="Blank", value=255, variable=self._ss_stripe_val_var).pack(side="left", padx=(8, 0))
+            r += 1
+
+            r = self._build_param_slider(f, r, "Sin frequency (mm):", self._ss_sin_freq_var,  0.1, 20.0, 0.05, "%.1f")
+            r = self._build_param_slider(f, r, "Sin phase (°):",      self._ss_sin_phase_var, 0.0, 360.0, 1.0, "%.0f°")
+            r = self._build_orient_selector(f, r, self._ss_orient_var, ["horizontal", "vertical"])
+
 
     def _make_image(self, w_px, h_px, dpi):
         img_gray = self._make_image_gray(w_px, h_px, dpi)
@@ -467,6 +512,15 @@ class PatternApp(tk.Tk):
                 frequency_mm=self._sine_freq_var.get(),
                 phase_deg=self._sine_phase_var.get(),
                 orientation=self._orient_var.get())
+        elif pt == "stripe_sin":
+            return generate_stripe_sin(w_px, h_px, dpi,
+                gap_mm=self._ss_gap_var.get(),
+                stripe_width_mm=self._ss_stripe_var.get(),
+                sin_frequency_mm=self._ss_sin_freq_var.get(),
+                sin_phase_deg=self._ss_sin_phase_var.get(),
+                stripe_value=self._ss_stripe_val_var.get(),
+                orientation=self._ss_orient_var.get())
+        
 
     def _render_preview(self, cw, ch):
         """Scale _preview_source to fill (cw × ch), centred, aspect-preserved."""
