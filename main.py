@@ -128,6 +128,30 @@ def generate_stripe_sin(width_px, height_px, dpi, gap_mm=7.5, stripe_width_mm=1.
         pat = np.broadcast_to(out_1d[np.newaxis, :], (height_px, width_px)).copy()
     return Image.fromarray(pat.astype(np.uint8), mode='L')
 
+def generate_concentric_rings(width_px, height_px, dpi, period_mm=9.0, ring_space_mm=0.8, ring_width_mm=0.12):
+    period_px  = max(2.0, mm_to_px_f(period_mm, dpi))
+    ring_sp_px = max(0.5, mm_to_px_f(ring_space_mm, dpi))
+    half_w_px = max(0.3, mm_to_px_f(ring_width_mm, dpi) / 2.0)
+
+    y_idx, x_idx = np.indices((height_px, width_px), dtype=np.float32)
+    x_mod = (x_idx % period_px) - period_px / 2.0
+    y_mod = (y_idx % period_px) - period_px / 2.0
+    dist  = np.sqrt(x_mod ** 2 + y_mod ** 2)
+
+    img_arr = np.full((height_px, width_px), 255, dtype=np.uint8)
+    max_r   = period_px / 2.0
+    n = 1
+    while True:
+        r_n = n * ring_sp_px
+        if r_n > max_r:
+            break
+        mask = np.abs(dist - r_n) <= half_w_px
+        img_arr[mask] = 0
+        n += 1
+
+    return Image.fromarray(img_arr, mode='L')
+
+
 # ---------------------------------------------------------------------------
 # Save-options dialog
 # ---------------------------------------------------------------------------
@@ -314,7 +338,8 @@ class PatternApp(tk.Tk):
                             ("PRBA (Pseudo-Random Binary Array)", "prba"),
                             ("Stripes", "stripes"),
                             ("Sin Grating", "sine"),
-                            ("Stripe Plus Sin Grating", "stripe_sin")]:
+                            ("Stripe Plus Sin Grating", "stripe_sin"),
+                            ("Concentric Rings", "rings")]:
             ttk.Radiobutton(parent, text=label, value=val,
                             variable=self._pattern_var,
                             command=self._on_pattern_changed).grid(
@@ -360,6 +385,10 @@ class PatternApp(tk.Tk):
         self._ss_sin_phase_var  = tk.DoubleVar(value=0.0)
         self._ss_stripe_val_var = tk.IntVar(value=0)     # 0 is Colored, 255 is Blank
         self._ss_orient_var     = tk.StringVar(value="horizontal")
+
+        self._ring_period_var   = tk.DoubleVar(value=9.0)
+        self._ring_space_var  = tk.DoubleVar(value=0.8)
+        self._ring_width_var       = tk.DoubleVar(value=0.12)
         
 
         self._on_pattern_changed()
@@ -472,7 +501,10 @@ class PatternApp(tk.Tk):
             r = self._build_param_slider(f, r, "Sin frequency (mm):", self._ss_sin_freq_var,  0.1, 20.0, 0.05, "%.1f")
             r = self._build_param_slider(f, r, "Sin phase (°):",      self._ss_sin_phase_var, 0.0, 360.0, 1.0, "%.0f°")
             r = self._build_orient_selector(f, r, self._ss_orient_var, ["horizontal", "vertical"])
-
+        elif pt == "rings":
+            r = self._build_param_slider(f, r, "Period (mm):", self._ring_period_var, 1.0, 20.0, 0.1, "%.1f")
+            r = self._build_param_slider(f, r, "Space (mm):", self._ring_space_var, 0.1, 5.0, 0.1, "%.1f")
+            r = self._build_param_slider(f, r, "Ring width (mm):", self._ring_width_var, 0.01, 1.0, 0.01, "%.2f")
 
     def _make_image(self, w_px, h_px, dpi):
         img_gray = self._make_image_gray(w_px, h_px, dpi)
@@ -520,6 +552,11 @@ class PatternApp(tk.Tk):
                 sin_phase_deg=self._ss_sin_phase_var.get(),
                 stripe_value=self._ss_stripe_val_var.get(),
                 orientation=self._ss_orient_var.get())
+        elif pt == "rings":
+            return generate_concentric_rings(w_px, h_px, dpi,
+                period_mm=self._ring_period_var.get(),
+                ring_space_mm=self._ring_space_var.get(),
+                ring_width_mm=self._ring_width_var.get())
         
 
     def _render_preview(self, cw, ch):
