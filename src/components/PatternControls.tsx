@@ -124,7 +124,7 @@ export function PatternControls({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="grid grid-cols-2 items-start gap-4">
       {/* Canvas settings */}
       <Card>
         <CardHeader className="pb-3">
@@ -280,7 +280,7 @@ export function PatternControls({
       </Card>
 
       {/* Pattern settings */}
-      <Card>
+      <Card className="col-span-full">
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Pattern</CardTitle>
         </CardHeader>

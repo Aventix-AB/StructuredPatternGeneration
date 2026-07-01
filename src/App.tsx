@@ -6,6 +6,11 @@ import { AppFooter } from "@/components/layout/AppFooter";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { downloadCanvasAsJpeg, printCanvas } from "@/lib/export";
 import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import {
   createDefaultSettingsMap,
   getPatternById,
   renderPatternById,
@@ -189,52 +194,58 @@ function App() {
     <div className="flex h-screen flex-col overflow-hidden">
       <AppHeader />
 
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        {/* Left – controls (fixed width, scrollable) */}
-        <aside className="w-80 flex-none overflow-y-auto border-r p-4">
-          <PatternControls
-            formatId={formatId}
-            sizeUnit={sizeUnit}
-            resolutionUnit={resolutionUnit}
-            widthMm={widthMm}
-            heightMm={heightMm}
-            dpi={dpi}
-            seed={seed}
-            patternId={patternId}
-            settingsMap={settingsMap}
-            onFormatChange={handleFormatChange}
-            onSizeUnitChange={setSizeUnit}
-            onResolutionUnitChange={setResolutionUnit}
-            onSizeChange={handleSizeChange}
-            onResolutionChange={handleResolutionChange}
-            onSeedChange={setSeed}
-            onPatternChange={setPatternId}
-            onPatternSettingChange={handlePatternSettingChange}
-            color1={color1}
-            color2={color2}
-            onColor1Change={setColor1}
-            onColor2Change={setColor2}
-          />
-        </aside>
+      <ResizablePanelGroup orientation="horizontal" className="min-h-0 flex-1 overflow-hidden">
+        {/* Left – controls (resizable, scrollable) */}
+        <ResizablePanel defaultSize="40%" minSize="18%" maxSize="55%" className="overflow-y-auto">
+          <div className="p-4">
+            <PatternControls
+              formatId={formatId}
+              sizeUnit={sizeUnit}
+              resolutionUnit={resolutionUnit}
+              widthMm={widthMm}
+              heightMm={heightMm}
+              dpi={dpi}
+              seed={seed}
+              patternId={patternId}
+              settingsMap={settingsMap}
+              onFormatChange={handleFormatChange}
+              onSizeUnitChange={setSizeUnit}
+              onResolutionUnitChange={setResolutionUnit}
+              onSizeChange={handleSizeChange}
+              onResolutionChange={handleResolutionChange}
+              onSeedChange={setSeed}
+              onPatternChange={setPatternId}
+              onPatternSettingChange={handlePatternSettingChange}
+              color1={color1}
+              color2={color2}
+              onColor1Change={setColor1}
+              onColor2Change={setColor2}
+            />
+          </div>
+        </ResizablePanel>
 
-        {/* Right – preview (fills remaining space, no scroll) */}
-        <main className="min-w-0 flex-1 overflow-hidden flex flex-col p-4">
-          <PatternPreview
-            canvasRef={previewCanvasRef}
-            widthMm={widthMm}
-            heightMm={heightMm}
-            dpi={dpi}
-            fullWidthPx={fullWidthPx}
-            fullHeightPx={fullHeightPx}
-            sizeUnit={sizeUnit}
-            resolutionUnit={resolutionUnit}
-            status={status}
-            patternLabel={activePattern?.label ?? ""}
-            onSaveJpg={handleSaveJpg}
-            onPrint={handlePrint}
-          />
-        </main>
-      </div>
+        <ResizableHandle withHandle />
+
+        {/* Right – preview (fills remaining space) */}
+        <ResizablePanel className="overflow-hidden flex flex-col">
+          <div className="flex h-full flex-col overflow-hidden p-4">
+            <PatternPreview
+              canvasRef={previewCanvasRef}
+              widthMm={widthMm}
+              heightMm={heightMm}
+              dpi={dpi}
+              fullWidthPx={fullWidthPx}
+              fullHeightPx={fullHeightPx}
+              sizeUnit={sizeUnit}
+              resolutionUnit={resolutionUnit}
+              status={status}
+              patternLabel={activePattern?.label ?? ""}
+              onSaveJpg={handleSaveJpg}
+              onPrint={handlePrint}
+            />
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
 
       <AppFooter />
     </div>
