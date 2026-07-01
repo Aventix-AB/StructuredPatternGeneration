@@ -20,6 +20,12 @@ export interface PatternControlSelect {
 
 export type PatternControl = PatternControlNumber | PatternControlSelect
 
+export interface RgbColor {
+    r: number
+    g: number
+    b: number
+}
+
 export interface PatternRenderContext {
     widthPx: number
     heightPx: number
@@ -31,6 +37,12 @@ export interface PatternDefinition<TSettings extends Record<string, number | str
     id: string
     label: string
     description: string
+    /**
+     * Optional path/URL to a thumbnail image shown in the pattern selector.
+     * Place the image in the pattern's own folder (e.g. `speckle/thumbnail.png`)
+     * and import it here so Vite bundles it correctly.
+     */
+    thumbnail?: string
     defaultSettings: TSettings
     controls: PatternControl[]
     generate: (context: PatternRenderContext, settings: TSettings) => Uint8ClampedArray

@@ -12,7 +12,9 @@ applyTo:
 - Reuse existing UI primitives from `src/components/ui` before creating new base controls.
 - Prefer utility classes and theme tokens from `src/index.css`; avoid hardcoded colors and ad-hoc design tokens.
 - Keep pattern generation deterministic: same inputs should produce the same output.
-- Keep all supported pattern implementations under `src/lib/patterns`.
+- Keep all supported pattern implementations under `src/lib/patterns`, one subfolder per pattern (e.g. `src/lib/patterns/speckle/index.ts`).
+- Register patterns by importing them in `src/lib/patterns/registry.ts` — that is the only file that changes when adding a pattern.
+- Each pattern folder is self-contained: it owns the `PatternDefinition` export and, when available, a `thumbnail.png` imported and assigned to `PatternDefinition.thumbnail` for display in the selector.
 - Use one shared pattern interface (types + render contract) for every pattern so new patterns can be added without changing UI integration.
 - Separate concerns clearly: UI components handle interaction/rendering, pattern math and geometry live in pure modules, and print/export helpers handle dimensions and scaling.
 - Keep physical units explicit when printing/exporting (for example: mm, inches, DPI), and perform conversions in one place.
