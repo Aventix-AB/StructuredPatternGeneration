@@ -7,9 +7,11 @@
  */
 
 import { checkerboardPattern } from "./checkerboard"
+import { concentricRingsPattern } from "./concentric-rings"
 import { prbaPattern } from "./prba"
 import { sinePattern } from "./sine"
 import { specklePattern } from "./speckle"
+import { stripeSinPattern } from "./stripe-sin"
 import { stripePattern } from "./stripes"
 import type { PatternDefinition } from "./types"
 
@@ -20,4 +22,6 @@ export const PATTERN_REGISTRY: PatternDefinition<any>[] = [
     prbaPattern,
     stripePattern,
     sinePattern,
+    stripeSinPattern,
+    concentricRingsPattern,
 ]

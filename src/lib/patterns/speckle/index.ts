@@ -2,6 +2,7 @@ import { mmToPx } from "@/lib/units"
 
 import { mulberry32, randomInt } from "../random"
 import type { PatternDefinition } from "../types"
+import thumbnail from "./speckle_10x10mm_300dpi.webp"
 
 type SpeckleSettings = {
     density: number
@@ -46,6 +47,7 @@ export const specklePattern: PatternDefinition<SpeckleSettings> = {
     id: "speckle",
     label: "Speckle",
     description: "Random circular speckles at a controlled density",
+    thumbnail,
     defaultSettings: {
         density: 0.35,
         minDotMm: 0.05,

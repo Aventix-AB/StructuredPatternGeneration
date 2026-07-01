@@ -1,6 +1,7 @@
 import { mmToPx } from "@/lib/units"
 
 import type { PatternDefinition } from "../types"
+import thumbnail from "./sine_10x10mm_300dpi.webp"
 
 type SineSettings = {
     frequencyMm: number
@@ -12,6 +13,7 @@ export const sinePattern: PatternDefinition<SineSettings> = {
     id: "sine",
     label: "Sin Grating",
     description: "Continuous sinusoidal grating",
+    thumbnail,
     defaultSettings: {
         frequencyMm: 5,
         phaseDeg: 0,

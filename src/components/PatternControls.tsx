@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PatternThumbnail } from "@/components/PatternThumbnail";
 import { getPatternById, PATTERN_REGISTRY } from "@/lib/patterns";
 import {
   CUSTOM_FORMAT_ID,
@@ -237,7 +238,10 @@ export function PatternControls({
               <SelectContent>
                 {PATTERN_REGISTRY.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
-                    {p.label}
+                    <div className="flex items-center gap-2">
+                      <PatternThumbnail src={p.thumbnail} alt={p.label} />
+                      {p.label}
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>

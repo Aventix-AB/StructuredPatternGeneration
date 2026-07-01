@@ -2,6 +2,7 @@ import { mmToPx } from "@/lib/units"
 
 import { mulberry32 } from "../random"
 import type { PatternDefinition } from "../types"
+import thumbnail from "./prba_10x10mm_300dpi.webp"
 
 type PrbaSettings = {
     blockSizeMm: number
@@ -11,6 +12,7 @@ export const prbaPattern: PatternDefinition<PrbaSettings> = {
     id: "prba",
     label: "PRBA",
     description: "Pseudo-random binary array",
+    thumbnail,
     defaultSettings: {
         blockSizeMm: 0.5,
     },

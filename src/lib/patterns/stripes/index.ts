@@ -1,6 +1,7 @@
 import { mmToPx } from "@/lib/units"
 
 import type { PatternDefinition } from "../types"
+import thumbnail from "./stripes_10x10mm_300dpi.webp"
 
 type StripeSettings = {
     stripeWidthMm: number
@@ -11,6 +12,7 @@ export const stripePattern: PatternDefinition<StripeSettings> = {
     id: "stripes",
     label: "Stripes",
     description: "Alternating black and white stripes",
+    thumbnail,
     defaultSettings: {
         stripeWidthMm: 1.5,
         orientation: "horizontal",

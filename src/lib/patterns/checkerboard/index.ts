@@ -1,6 +1,7 @@
 import { mmToPx } from "@/lib/units"
 
 import type { PatternDefinition } from "../types"
+import thumbnail from "./checkerboard_10x10mm_300dpi.webp"
 
 type CheckerboardSettings = {
     squareSizeMm: number
@@ -10,6 +11,7 @@ export const checkerboardPattern: PatternDefinition<CheckerboardSettings> = {
     id: "checkerboard",
     label: "Checkerboard",
     description: "Alternating square grid",
+    thumbnail,
     defaultSettings: {
         squareSizeMm: 1,
     },
