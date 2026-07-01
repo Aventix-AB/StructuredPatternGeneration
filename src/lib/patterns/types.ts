@@ -20,6 +20,12 @@ export interface PatternControlSelect {
 
 export type PatternControl = PatternControlNumber | PatternControlSelect
 
+export interface RgbColor {
+    r: number
+    g: number
+    b: number
+}
+
 export interface PatternRenderContext {
     widthPx: number
     heightPx: number

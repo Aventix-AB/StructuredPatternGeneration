@@ -6,8 +6,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { RgbColorPicker } from "react-colorful";
 import { PatternThumbnail } from "@/components/PatternThumbnail";
-import { getPatternById, PATTERN_REGISTRY } from "@/lib/patterns";
+import {
+  getPatternById,
+  PATTERN_REGISTRY,
+  type RgbColor,
+} from "@/lib/patterns";
 import {
   CUSTOM_FORMAT_ID,
   dpiToPxPerMm,
@@ -40,6 +45,11 @@ export interface PatternControlsProps {
   onSeedChange: (seed: number) => void;
   onPatternChange: (id: string) => void;
   onPatternSettingChange: (key: string, value: number | string) => void;
+  // Colors
+  color1: RgbColor;
+  color2: RgbColor;
+  onColor1Change: (color: RgbColor) => void;
+  onColor2Change: (color: RgbColor) => void;
 }
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
@@ -86,6 +96,10 @@ export function PatternControls({
   onSeedChange,
   onPatternChange,
   onPatternSettingChange,
+  color1,
+  color2,
+  onColor1Change,
+  onColor2Change,
 }: PatternControlsProps) {
   const widthDisplay = toDisplaySize(widthMm, sizeUnit);
   const heightDisplay = toDisplaySize(heightMm, sizeUnit);
@@ -221,6 +235,47 @@ export function PatternControls({
               }
             />
           </Field>
+        </CardContent>
+      </Card>
+
+      {/* Colors */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Colors</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-1.5">
+            <div className="flex items-center gap-2">
+              <FieldLabel>Foreground</FieldLabel>
+              <div
+                className="h-3.5 w-3.5 flex-none rounded-sm border border-border"
+                style={{
+                  background: `rgb(${color1.r},${color1.g},${color1.b})`,
+                }}
+              />
+            </div>
+            <RgbColorPicker
+              color={color1}
+              onChange={onColor1Change}
+              style={{ width: "100%" }}
+            />
+          </div>
+          <div className="grid gap-1.5">
+            <div className="flex items-center gap-2">
+              <FieldLabel>Background</FieldLabel>
+              <div
+                className="h-3.5 w-3.5 flex-none rounded-sm border border-border"
+                style={{
+                  background: `rgb(${color2.r},${color2.g},${color2.b})`,
+                }}
+              />
+            </div>
+            <RgbColorPicker
+              color={color2}
+              onChange={onColor2Change}
+              style={{ width: "100%" }}
+            />
+          </div>
         </CardContent>
       </Card>
 

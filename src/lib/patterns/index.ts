@@ -1,6 +1,6 @@
 import { PATTERN_REGISTRY } from "./registry"
 
-export type { PatternControl, PatternDefinition, PatternRenderContext } from "./types"
+export type { PatternControl, PatternDefinition, PatternRenderContext, RgbColor } from "./types"
 export { PATTERN_REGISTRY } from "./registry"
 
 export function getPatternById(id: string): (typeof PATTERN_REGISTRY)[number] | undefined {

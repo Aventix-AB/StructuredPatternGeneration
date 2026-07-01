@@ -8,7 +8,6 @@ type StripeSinSettings = {
     stripeWidthMm: number
     sinFrequencyMm: number
     sinPhaseDeg: number
-    stripeColor: "black" | "white"
     orientation: "horizontal" | "vertical"
 }
 
@@ -22,7 +21,6 @@ export const stripeSinPattern: PatternDefinition<StripeSinSettings> = {
         stripeWidthMm: 1.5,
         sinFrequencyMm: 1.0,
         sinPhaseDeg: 0,
-        stripeColor: "black",
         orientation: "horizontal",
     },
     controls: [
@@ -63,15 +61,6 @@ export const stripeSinPattern: PatternDefinition<StripeSinSettings> = {
         },
         {
             type: "select",
-            id: "stripeColor",
-            label: "Stripe Color",
-            options: [
-                { value: "black", label: "Black" },
-                { value: "white", label: "White" },
-            ],
-        },
-        {
-            type: "select",
             id: "orientation",
             label: "Orientation",
             options: [
@@ -86,7 +75,6 @@ export const stripeSinPattern: PatternDefinition<StripeSinSettings> = {
         const periodPx = gapPx + stripePx
         const sinFreqPx = Math.max(2, mmToPx(settings.sinFrequencyMm, dpi))
         const phaseRad = (settings.sinPhaseDeg * Math.PI) / 180
-        const stripeValue = settings.stripeColor === "black" ? 0 : 255
         const horizontal = settings.orientation === "horizontal"
 
         const buffer = new Uint8ClampedArray(widthPx * heightPx)
@@ -98,7 +86,7 @@ export const stripeSinPattern: PatternDefinition<StripeSinSettings> = {
                 const pos = axis % periodPx
                 let value: number
                 if (pos < stripePx) {
-                    value = stripeValue
+                    value = 0
                 } else {
                     const local = pos - stripePx
                     value = Math.round(

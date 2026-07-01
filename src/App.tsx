@@ -9,6 +9,7 @@ import {
   createDefaultSettingsMap,
   getPatternById,
   renderPatternById,
+  type RgbColor,
 } from "@/lib/patterns";
 import {
   createCanvasFromImageData,
@@ -39,6 +40,8 @@ function App() {
 
   const [patternId, setPatternId] = useState<string>("speckle");
   const [seed, setSeed] = useState<number>(42);
+  const [color1, setColor1] = useState<RgbColor>({ r: 0, g: 0, b: 0 });
+  const [color2, setColor2] = useState<RgbColor>({ r: 255, g: 255, b: 255 });
   const [settingsMap, setSettingsMap] = useState<
     Record<string, Record<string, number | string>>
   >(createDefaultSettingsMap);
@@ -80,6 +83,8 @@ function App() {
         previewSize.widthPx,
         previewSize.heightPx,
         grayscale,
+        color1,
+        color2,
       );
       const canvas = previewCanvasRef.current;
       canvas.width = imageData.width;
@@ -93,6 +98,8 @@ function App() {
     }
   }, [
     activePattern,
+    color1,
+    color2,
     patternId,
     previewSize.heightPx,
     previewSize.previewDpi,
@@ -145,6 +152,8 @@ function App() {
       fullWidthPx,
       fullHeightPx,
       grayscale,
+      color1,
+      color2,
     );
     return createCanvasFromImageData(imageData);
   }
@@ -201,6 +210,10 @@ function App() {
             onSeedChange={setSeed}
             onPatternChange={setPatternId}
             onPatternSettingChange={handlePatternSettingChange}
+            color1={color1}
+            color2={color2}
+            onColor1Change={setColor1}
+            onColor2Change={setColor2}
           />
         </aside>
 
