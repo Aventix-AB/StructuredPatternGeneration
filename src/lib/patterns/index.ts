@@ -1,8 +1,7 @@
-import { BUILTIN_PATTERNS } from "./builtins"
+import { PATTERN_REGISTRY } from "./registry"
 
 export type { PatternControl, PatternDefinition, PatternRenderContext } from "./types"
-
-export const PATTERN_REGISTRY = BUILTIN_PATTERNS
+export { PATTERN_REGISTRY } from "./registry"
 
 export function getPatternById(id: string): (typeof PATTERN_REGISTRY)[number] | undefined {
     return PATTERN_REGISTRY.find((pattern) => pattern.id === id)
