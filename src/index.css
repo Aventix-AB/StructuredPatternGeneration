@@ -128,3 +128,14 @@
     @apply font-sans;
     }
 }
+
+/* Compact size override for react-colorful pickers */
+.color-picker-compact .react-colorful {
+  height: 140px;
+}
+.color-picker-compact .react-colorful__hue {
+  height: 16px;
+}
+.color-picker-compact .react-colorful__alpha {
+  height: 16px;
+}

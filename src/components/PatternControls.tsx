@@ -254,11 +254,13 @@ export function PatternControls({
                 }}
               />
             </div>
-            <RgbColorPicker
-              color={color1}
-              onChange={onColor1Change}
-              style={{ width: "100%" }}
-            />
+            <div className="color-picker-compact">
+              <RgbColorPicker
+                color={color1}
+                onChange={onColor1Change}
+                style={{ width: "100%" }}
+              />
+            </div>
           </div>
           <div className="grid gap-1.5">
             <div className="flex items-center gap-2">
@@ -270,11 +272,13 @@ export function PatternControls({
                 }}
               />
             </div>
-            <RgbColorPicker
-              color={color2}
-              onChange={onColor2Change}
-              style={{ width: "100%" }}
-            />
+            <div className="color-picker-compact">
+              <RgbColorPicker
+                color={color2}
+                onChange={onColor2Change}
+                style={{ width: "100%" }}
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
