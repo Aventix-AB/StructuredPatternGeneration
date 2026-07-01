@@ -19,9 +19,15 @@ This web application lets you generate, preview, and print structured imaging pa
 At [Aventix](https://aventix.io) we develop sensor technologies for AI, bioanalytics, and scientific research. One recurring challenge when imaging transparent or semi-transparent liquids (such as DMSO, buffer solutions, or cell media) in well plates is poor contrast against plain backgrounds. Placing the well plate on top of a printed structured pattern dramatically improves image quality and signal extraction.
 
 <p align="center">
-  <img src="structured_pattern_well_plate.jpeg" alt="A well plate filled with DMSO resting on a structured background pattern" width="600" />
+  <img src="Grid_DMSO.jpeg" alt="A well plate filled with DMSO resting on a structured background pattern" width="600" />
   <br/>
   <em>A microplate filled with DMSO imaged over a structured pattern background.</em>
+</p>
+
+<p align="center">
+  <img src="Rings_Empty.jpeg" alt="A well plate filled with DMSO resting on a structured background pattern" width="600" />
+  <br/>
+  <em>A empty microplate imaged over a ring pattern with same pitch as wells.</em>
 </p>
 
 ## Open tooling philosophy
